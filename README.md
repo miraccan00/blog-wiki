@@ -15,10 +15,17 @@ Başka bir repoda bu hook'ları kullanmak için, o repodaki `.pre-commit-config.
 ```yaml
 repos:
   - repo: https://github.com/miraccanyilmaz/blog-wiki
-    rev: main
+    rev: pre-commit-ozel-kontroller # git tag ile oluşturulan sabit versiyon
     hooks:
       - id: repository-validation
       - id: trivy-fs-scan
+repos:
+  - repo: https://github.com/miraccanyilmaz/blog-wiki
+    rev: 67134d0d2cfd6b6f90adcba2fa29534ddb185e42 
+    hooks:
+      - id: repository-validation
+      - id: trivy-fs-scan
+
 ```
 
 Ardından:
