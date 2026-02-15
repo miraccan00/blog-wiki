@@ -1,0 +1,15 @@
+- id: repository-validation
+  name: Repository Validation
+  description: Repoda Dockerfile olup olmadığını kontrol eder
+  entry: hooks/check_dockerfile.sh
+  language: script
+  always_run: true
+  pass_filenames: false
+
+- id: trivy-fs-scan
+  name: Trivy Filesystem Scan
+  description: Docker üzerinden Trivy ile filesystem güvenlik taraması yapar
+  entry: hooks/trivy_scan.py
+  language: python
+  always_run: true
+  pass_filenames: false
