@@ -9,6 +9,12 @@ repos:
         args: ['--maxkb=1000']
       - id: detect-private-key
 
+  - repo: https://github.com/miraccan00/blog-wiki
+    rev: pre-commit-ozel-kontroller  # git tag veya commit hash kullanın
+    hooks:
+      - id: repository-validation
+      - id: trivy-fs-scan
+
   # Go formatting and checks (Windows compatible)
   - repo: local
     hooks:
