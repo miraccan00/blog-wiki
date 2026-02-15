@@ -10,6 +10,6 @@
   name: Trivy Filesystem Scan
   description: Docker üzerinden Trivy ile filesystem güvenlik taraması yapar
   entry: hooks/trivy_scan.py
-  language: python
+  language: script
   always_run: true
   pass_filenames: false
