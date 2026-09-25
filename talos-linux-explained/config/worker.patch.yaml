@@ -1,0 +1,13 @@
+# Worker only. This is the patch `make patch` applies to a running node
+# (talosctl patch mc --nodes <worker> --patch @config/worker.patch.yaml).
+# Everything in it is applied live: kubelet is restarted with the new args,
+# sysctls are written, the node label appears. No reboot.
+machine:
+  kubelet:
+    extraArgs:
+      max-pods: "200"
+  sysctls:
+    net.core.somaxconn: "65535"
+    fs.inotify.max_user_instances: "8192"
+  nodeLabels:
+    node.lab/pool: general

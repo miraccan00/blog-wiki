@@ -1,0 +1,10 @@
+# Applied to every node at generation time (talosctl cluster create --config-patch).
+# Cluster-wide settings that both roles must agree on.
+cluster:
+  allowSchedulingOnControlPlanes: false
+machine:
+  network:
+    extraHostEntries:
+      - ip: 10.5.0.2
+        aliases:
+          - registry.lab.internal

@@ -10,6 +10,7 @@ on publication day.
 | # | Date | Article (EN / TR) | Category | Code |
 |---|---|---|---|---|
 | 01 | 2026-09-22 | [Cluster API, Explained by Building One: kind, the Docker Provider and a Workload Cluster in 15 Minutes](https://miraccanyilmaz.me/en/blog/cluster-api-explained-with-capd/)<br>[Cluster API'yi Kurarak Anlamak: kind, Docker Provider ve 15 Dakikada Bir Workload Cluster](https://miraccanyilmaz.me/blog/cluster-api-explained-with-capd/) | `platform-engineering` | [`cluster-api-explained-with-capd/`](cluster-api-explained-with-capd/) |
+| 02 | 2026-09-25 | [Talos Linux, Explained by Running It: No Shell, One Machine Config, an OS You Talk to Over gRPC](https://miraccanyilmaz.me/en/blog/talos-linux-explained/)<br>[Talos Linux'u Çalıştırarak Anlamak: Shell Yok, Tek Makine Konfigürasyonu, gRPC ile Konuşulan İşletim Sistemi](https://miraccanyilmaz.me/blog/talos-linux-explained/) | `platform-engineering` | [`talos-linux-explained/`](talos-linux-explained/) |
 
 ## Published earlier
 

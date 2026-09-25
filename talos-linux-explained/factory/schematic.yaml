@@ -1,0 +1,13 @@
+# Image Factory schematic. POST it to https://factory.talos.dev/schematics and you
+# get back a deterministic id; the same YAML always yields the same id.
+#
+#   curl -s -X POST https://factory.talos.dev/schematics --data-binary @factory/schematic.yaml
+#   → {"id":"613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245", ...}
+#
+# Why these two: Longhorn (and any iSCSI-based CSI) needs iscsid and the util-linux
+# tools (blkid, nsenter, fstrim) on the host. Talos ships neither by default.
+customization:
+  systemExtensions:
+    officialExtensions:
+      - siderolabs/iscsi-tools
+      - siderolabs/util-linux-tools

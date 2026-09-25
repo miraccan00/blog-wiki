@@ -1,0 +1,8 @@
+# A change Talos will only apply with a reboot. machine.env feeds the environment
+# of every system service and is read once at boot, so there is no live path for it.
+# Used with --dry-run in scripts/patch.sh to show how the API says so before
+# anything happens. (Kernel modules, sysctls, kubelet args and registries are all
+# applied live; we checked.)
+machine:
+  env:
+    GRPC_GO_LOG_SEVERITY_LEVEL: info

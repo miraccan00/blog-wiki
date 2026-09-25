@@ -1,0 +1,9 @@
+# Control plane only. apiServer.extraArgs lands in the static pod manifest;
+# Talos restarts the pod, no reboot.
+cluster:
+  apiServer:
+    extraArgs:
+      event-ttl: 2h
+machine:
+  nodeLabels:
+    topology.kubernetes.io/zone: lab-a
