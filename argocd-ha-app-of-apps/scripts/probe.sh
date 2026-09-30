@@ -7,6 +7,10 @@
 set -euo pipefail
 APP=${APP:-product-helloapi-prod}
 before=$(kubectl -n argocd get application "$APP" -o jsonpath='{.status.reconciledAt}')
+# reconciledAt has 1 s resolution: if the refresh lands in the same second as the last
+# reconcile (e.g. right after drift.sh), the value doesn't change and we'd wait for the
+# next periodic reconcile (~3 min). Step into the next second before starting the clock.
+sleep 1
 start=$(date +%s)
 kubectl -n argocd annotate application "$APP" argocd.argoproj.io/refresh=hard --overwrite >/dev/null
 until now=$(kubectl -n argocd get application "$APP" -o jsonpath='{.status.reconciledAt}' 2>/dev/null) && [ -n "$now" ] && [ "$now" != "$before" ]; do
