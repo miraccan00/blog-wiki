@@ -8,7 +8,7 @@ CHART_VER  ?= 10.9.2
 REV        ?= blog-05
 RAW        := https://raw.githubusercontent.com/miraccan00/platform-gitops/$(REV)
 
-.PHONY: help up argocd bootstrap dns zitadel-ui setup ui users status down
+.PHONY: help up argocd bootstrap dns zitadel-ui setup ui cli users status down
 help:
 	@grep -E '^[a-z/.-]+:.*##' $(MAKEFILE_LIST) | sed 's/:.*##/ —/'
 
@@ -40,9 +40,13 @@ ui:          ## Argo CD on http://localhost:8080 (log in via ZITADEL; admin pass
 	@echo "http://localhost:8080  break-glass admin / $$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d)"
 	@while :; do kubectl -n argocd port-forward svc/argocd-server 8080:80 || true; echo "port-forward lost, reconnecting"; sleep 1; done
 
-users:       ## the two lab users
-	@echo "alice / Password1!  -> group platform-admins  -> role:admin"
-	@echo "bob   / Password1!  -> group platform-viewers -> role:readonly"
+cli:         ## argocd CLI login through ZITADEL (browser opens); its own port-forward, see README
+	argocd login --port-forward --port-forward-namespace argocd --plaintext --sso
+
+users:       ## the three lab users
+	@echo "alice / Password1!  -> group platform-admins    -> role:admin"
+	@echo "dave  / Password1!  -> group product-developers -> role:developer (products project only)"
+	@echo "bob   / Password1!  -> group platform-viewers   -> role:readonly"
 
 status:      ## Applications and ZITADEL pods
 	@kubectl -n argocd get applications
