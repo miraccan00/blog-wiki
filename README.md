@@ -14,6 +14,7 @@ on publication day.
 | 03 | 2026-09-27 | [Why Cluster API's Docker Provider Can't Bootstrap Talos](https://miraccanyilmaz.me/en/blog/why-capd-cannot-run-talos/)<br>[Cluster API Docker Provider Talos'u Neden Ayağa Kaldıramaz](https://miraccanyilmaz.me/blog/why-capd-cannot-run-talos/) | `platform-engineering` | [`why-capd-cannot-run-talos/`](why-capd-cannot-run-talos/) |
 | 04 | 2026-10-13 | [Argo CD in HA, Explained by Breaking It: redis-ha, App-of-Apps and the One Pod That Doesn't Fail Over](https://miraccanyilmaz.me/en/blog/argocd-ha-app-of-apps/)<br>[Argo CD'yi HA Kurup Bozarak Anlamak: redis-ha, App-of-Apps ve Failover Etmeyen Tek Pod](https://miraccanyilmaz.me/blog/argocd-ha-app-of-apps/) | `gitops` | [`argocd-ha-app-of-apps/`](argocd-ha-app-of-apps/) |
 | 05 | 2026-10-02 | [Argo CD SSO Integration: OIDC and RBAC with ZITADEL](https://miraccanyilmaz.me/en/blog/argocd-sso-zitadel/)<br>[Argo CD SSO Entegrasyonu: ZITADEL ile OIDC ve RBAC](https://miraccanyilmaz.me/blog/argocd-sso-zitadel/) | `security` | [`argocd-sso-zitadel/`](argocd-sso-zitadel/) |
+| 05b | 2026-10-05 | [Moving Secrets into Vault: From base64 in Git to Vault and ESO Without Downtime](https://miraccanyilmaz.me/en/blog/vault-eso-secret-migration/)<br>[Secret'ları Kasaya Taşımak: Git'teki base64'ten Vault ve ESO'ya Kesintisiz Geçiş](https://miraccanyilmaz.me/blog/vault-eso-secret-migration/) | `security` | [`vault-eso-secret-migration/`](vault-eso-secret-migration/) |
 
 ## Published earlier
 
