@@ -72,6 +72,7 @@ run `make vault-init` again.
 | Git Secret vs ESO copy, SHA-256 prefix per key | identical (6 of 6 keys) |
 | Cutover commit: base64 Secrets pruned by Argo CD, recreated by ESO | same second (17:58:57), new UIDs, no pod restart |
 | `make rotate-db` | 3.3 s; 180 probe requests during it, 180 × 200 |
+| Retest on 2026-10-05, clean cluster, `make rotate-db` 4 more times | 1 of 422 probe requests not 200 (`/debug/ready`, code not captured); one ZITADEL replica |
 | Old password from Git history after rotation | `FATAL: password authentication failed for user "zitadel"` |
 | `make rotate-oidc`, then alice logs in | 0.7 s; login OK, argocd-server not restarted |
 | `vault kv put` with one key instead of `kv patch` | Secret loses `clientID`; Argo CD sends `client_id=$argocd-oidc-zitadel:clientID`, ZITADEL `400 Errors.App.NotFound` |
