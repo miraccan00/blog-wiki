@@ -1,0 +1,50 @@
+# Deployments without an `app` label get one derived from their name, on the object and on the
+# pod template. Mutation runs before validation, so require-app-label never fires for Deployments;
+# it only catches hand-written Pods.
+apiVersion: policies.kyverno.io/v1
+kind: MutatingPolicy
+metadata:
+  name: mutate-app-label-from-name
+spec:
+  evaluation:
+    admission:
+      enabled: true
+    mutateExisting:
+      enabled: false                 # existing Deployments are left alone; rollout would restart pods
+  failurePolicy: Fail
+  matchConstraints:
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values: [kube-system, kyverno]
+    resourceRules:
+      - apiGroups: ["apps"]
+        apiVersions: ["v1"]
+        operations: ["CREATE"]
+        resources: ["deployments"]
+  matchConditions:
+    - name: template-has-no-app-label
+      expression: >-
+        !(has(object.spec.template.metadata) && has(object.spec.template.metadata.labels) &&
+          'app' in object.spec.template.metadata.labels)
+  mutations:
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: |
+          Object{
+            metadata: Object.metadata{
+              labels: Object.metadata.labels{
+                app: object.metadata.name
+              }
+            },
+            spec: Object.spec{
+              template: Object.spec.template{
+                metadata: Object.spec.template.metadata{
+                  labels: Object.spec.template.metadata.labels{
+                    app: object.metadata.name
+                  }
+                }
+              }
+            }
+          }

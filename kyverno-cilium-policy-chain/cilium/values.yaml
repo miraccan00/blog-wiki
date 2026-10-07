@@ -1,0 +1,15 @@
+kubeProxyReplacement: true
+k8sServiceHost: cilium-lab-control-plane
+k8sServicePort: 6443
+ipam:
+  mode: kubernetes
+routingMode: tunnel
+tunnelProtocol: vxlan
+hubble:
+  enabled: true
+  relay:
+    enabled: true
+  ui:
+    enabled: true
+operator:
+  replicas: 1

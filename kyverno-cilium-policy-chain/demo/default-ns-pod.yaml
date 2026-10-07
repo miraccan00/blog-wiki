@@ -1,0 +1,15 @@
+# Looks fine (tag, resources, app label), but lands in `default`.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: quick-test
+  namespace: default
+  labels:
+    app: quick-test
+spec:
+  containers:
+    - name: web
+      image: nginx:1.29
+      resources:
+        requests: {cpu: 10m, memory: 32Mi}
+        limits: {memory: 64Mi}

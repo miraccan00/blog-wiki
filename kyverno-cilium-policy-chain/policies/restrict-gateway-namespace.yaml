@@ -1,0 +1,18 @@
+# One Gateway per cluster edge, owned by the platform team. Tenants attach HTTPRoutes;
+# they do not get to open new listeners or claim LB-IPAM addresses.
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: restrict-gateway-namespace
+spec:
+  validationActions: [Deny]          # no Audit phase: nobody has a Gateway outside platform today
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["gateway.networking.k8s.io"]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["gateways"]
+  validations:
+    - expression: "object.metadata.namespace == 'platform'"
+      messageExpression: >-
+        "Gateway objects live in the platform namespace only (got " + object.metadata.namespace + "); use an HTTPRoute"

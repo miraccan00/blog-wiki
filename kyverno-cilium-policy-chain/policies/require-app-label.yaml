@@ -1,0 +1,29 @@
+# Cilium identities are computed from pod labels. A pod without `app` cannot be selected by
+# any CiliumNetworkPolicy except default-deny, so it is unreachable by design; refuse it early.
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: require-app-label
+spec:
+  validationActions: [Audit]        # step 1: Audit. Step 2 (make enforce): Deny
+  matchConstraints:
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values: [kube-system, kube-public, kube-node-lease, kyverno, cilium-secrets, local-path-storage, tetragon]
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+  evaluation:
+    background:
+      enabled: true                 # existing pods show up in PolicyReports too
+  autogen:
+    podControllers:
+      controllers: [deployments, statefulsets, daemonsets, jobs, cronjobs]
+  validations:
+    - expression: "has(object.metadata.labels) && 'app' in object.metadata.labels"
+      messageExpression: >-
+        "pod " + object.metadata.name + " has no 'app' label; Cilium policies select on it"

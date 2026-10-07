@@ -1,0 +1,23 @@
+# From the Kyverno policy library, unchanged rule:
+#   https://github.com/kyverno/policies/tree/main/best-practices-vpol/disallow-default-namespace
+# `default` is where every `kubectl apply` without `-n` lands: no owner, no quota, no team RBAC.
+# (It does get a default-deny: generate-default-deny has generateExisting, checked in the lab.)
+# No autogen (as in the library): a Deployment sets the namespace in its own metadata, not in the template.
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: disallow-default-namespace
+spec:
+  validationActions: [Audit]
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+  evaluation:
+    background:
+      enabled: true
+  validations:
+    - expression: "namespaceObject.metadata.name != 'default'"
+      message: "Using 'default' namespace is not allowed."

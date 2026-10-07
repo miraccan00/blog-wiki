@@ -1,0 +1,14 @@
+# Three violations on purpose: no app label, hostNetwork, privileged.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bad
+  namespace: team-a
+spec:
+  hostNetwork: true
+  containers:
+    - name: shell
+      image: alpine:3.20
+      command: ["sleep", "infinity"]
+      securityContext:
+        privileged: true

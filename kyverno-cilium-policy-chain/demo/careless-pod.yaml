@@ -1,0 +1,13 @@
+# Passes the Cilium-chain policies (app label, no hostNetwork, not privileged),
+# fails the two library rules: `latest` tag and no requests/limits.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: careless
+  namespace: team-a
+  labels:
+    app: careless
+spec:
+  containers:
+    - name: web
+      image: nginx:latest

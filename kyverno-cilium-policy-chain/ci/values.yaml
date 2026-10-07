@@ -1,0 +1,16 @@
+# Offline, the CLI has no Namespace objects; CEL rules that read namespaceObject
+# (disallow-default-namespace) end in "error" without them. List every namespace the manifests use.
+# Format from Kyverno's own CLI tests (test/cli/test-validating-policy/with-namespaceObject-2).
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: ci
+namespaces:
+  - apiVersion: v1
+    kind: Namespace
+    metadata:
+      name: default
+  - apiVersion: v1
+    kind: Namespace
+    metadata:
+      name: team-a

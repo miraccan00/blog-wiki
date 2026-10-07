@@ -1,0 +1,30 @@
+# hostNetwork pods use the node's identity, bypass CiliumNetworkPolicy L7 rules and are not
+# subject to the namespace default-deny. Only the platform team may run them (kube-system is excluded anyway).
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: disallow-host-network
+spec:
+  validationActions: [Audit]
+  matchConstraints:
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values: [kube-system, kube-public, kube-node-lease, kyverno, cilium-secrets, local-path-storage, tetragon]
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+  evaluation:
+    background:
+      enabled: true
+  autogen:
+    podControllers:
+      controllers: [deployments, statefulsets, daemonsets, jobs, cronjobs]
+  validations:
+    - expression: "!has(object.spec.hostNetwork) || object.spec.hostNetwork == false"
+      message: "hostNetwork is not allowed: it bypasses CiliumNetworkPolicy and the namespace default-deny"
+    - expression: "!has(object.spec.hostPID) || object.spec.hostPID == false"
+      message: "hostPID is not allowed"

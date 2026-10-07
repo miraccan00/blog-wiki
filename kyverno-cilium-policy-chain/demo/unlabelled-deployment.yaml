@@ -1,0 +1,28 @@
+# No `app` label anywhere; the MutatingPolicy adds it from the name.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echo
+  namespace: team-a
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: echo
+  template:
+    metadata:
+      labels:
+        role: echo
+    spec:
+      containers:
+        - name: echo
+          image: ealen/echo-server:0.9.2
+          ports:
+            - containerPort: 80
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+          resources:
+            requests: {cpu: 10m, memory: 32Mi}
+            limits: {memory: 64Mi}

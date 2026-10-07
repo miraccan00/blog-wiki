@@ -1,0 +1,21 @@
+# Passes every rule (tag, resources, app label). Used to show default-deny in Hubble:
+# DNS works, everything else from team-a is DROPPED.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: curl
+  namespace: team-a
+  labels:
+    app: curl
+spec:
+  containers:
+    - name: curl
+      image: curlimages/curl:8.16.0
+      command: ["sleep", "infinity"]
+      resources:
+        requests: {cpu: 10m, memory: 16Mi}
+        limits: {memory: 32Mi}
+      securityContext:
+        allowPrivilegeEscalation: false
+        runAsNonRoot: true
+        runAsUser: 100

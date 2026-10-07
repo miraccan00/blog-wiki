@@ -1,0 +1,32 @@
+# From the Kyverno policy library, unchanged rules:
+#   https://github.com/kyverno/policies/tree/main/best-practices-vpol/disallow-latest-tag
+# Added here: the same system-namespace exclusion as the other policies, and autogen for controllers.
+# `latest` moves: the pod that restarts tonight may run a different image than the one you tested.
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: disallow-latest-tag
+spec:
+  validationActions: [Audit]
+  matchConstraints:
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values: [kube-system, kube-public, kube-node-lease, kyverno, cilium-secrets, local-path-storage, tetragon]
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+  evaluation:
+    background:
+      enabled: true
+  autogen:
+    podControllers:
+      controllers: [deployments, statefulsets, daemonsets, jobs, cronjobs]
+  validations:
+    - expression: "object.spec.containers.all(container, container.image.contains(':'))"
+      message: "An image tag is required."
+    - expression: "object.spec.containers.all(container, !container.image.endsWith(':latest'))"
+      message: "Using a mutable image tag e.g. 'latest' is not allowed."

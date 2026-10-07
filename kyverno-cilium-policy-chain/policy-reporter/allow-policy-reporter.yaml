@@ -1,0 +1,15 @@
+# Kyverno generates a default-deny for this namespace like for any other: DNS only.
+# Policy Reporter has to watch PolicyReports through the API server, so it gets a second CNP next to
+# the generated one (Cilium merges policies). The generated default-deny itself stays untouched.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-policy-reporter
+  namespace: policy-reporter
+spec:
+  endpointSelector: {}
+  egress:
+    - toEntities: [kube-apiserver]
+    - toEndpoints: [{}]          # UI → API → plugin, inside the namespace
+  ingress:
+    - fromEndpoints: [{}]

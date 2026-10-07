@@ -1,0 +1,28 @@
+# Kyverno 1.19.x — lab values. Production: replicas 3 for every controller.
+admissionController:
+  replicas: 1
+  container:
+    resources:
+      requests: { cpu: 100m, memory: 128Mi }
+backgroundController:
+  replicas: 1
+  # Kyverno's chart ships rbac.clusterRole.extraResources; we use an aggregated
+  # ClusterRole instead (rbac/kyverno-cilium-clusterrole.yaml) so the grant lives in git next to the policy.
+reportsController:
+  replicas: 1
+cleanupController:
+  replicas: 1
+config:
+  # Namespaces Kyverno never touches. kube-system: CNI and DNS must not depend on a webhook.
+  resourceFilters:
+    - '[*/*,kube-system,*]'
+    - '[*/*,kube-public,*]'
+    - '[*/*,kube-node-lease,*]'
+    - '[*/*,kyverno,*]'
+    - '[*/*,local-path-storage,*]'
+  webhooks:
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values: [kube-system, kyverno]

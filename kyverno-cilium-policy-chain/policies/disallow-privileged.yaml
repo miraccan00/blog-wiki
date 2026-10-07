@@ -1,0 +1,40 @@
+# A privileged container can unload Tetragon's BPF programs or write to /sys/fs/bpf.
+# Everything the runtime layer observes assumes this rule holds.
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: disallow-privileged
+spec:
+  validationActions: [Audit]
+  matchConstraints:
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values: [kube-system, kube-public, kube-node-lease, kyverno, cilium-secrets, local-path-storage, tetragon]
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+  evaluation:
+    background:
+      enabled: true
+  autogen:
+    podControllers:
+      controllers: [deployments, statefulsets, daemonsets, jobs, cronjobs]
+  variables:
+    - name: allContainers
+      expression: >-
+        object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers : [])
+  validations:
+    - expression: >-
+        variables.allContainers.all(c,
+          !has(c.securityContext) || !has(c.securityContext.privileged) || c.securityContext.privileged == false)
+      message: "privileged containers are not allowed: they can disable the eBPF runtime layer (Tetragon)"
+    - expression: >-
+        variables.allContainers.all(c,
+          !has(c.securityContext) || !has(c.securityContext.capabilities) ||
+          !has(c.securityContext.capabilities.add) ||
+          !('SYS_ADMIN' in c.securityContext.capabilities.add || 'BPF' in c.securityContext.capabilities.add))
+      message: "CAP_SYS_ADMIN and CAP_BPF may not be added"

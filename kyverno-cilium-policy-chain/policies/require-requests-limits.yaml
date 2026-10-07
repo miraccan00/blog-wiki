@@ -1,0 +1,42 @@
+# From the Kyverno policy library, unchanged rule:
+#   https://github.com/kyverno/policies/tree/main/best-practices-vpol/require-pod-requests-limits
+# Added here: the same system-namespace exclusion as the other policies, and autogen for controllers.
+# Without requests the scheduler packs pods blind; without a memory limit one leak takes the node down.
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: require-requests-limits
+spec:
+  validationActions: [Audit]
+  matchConstraints:
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values: [kube-system, kube-public, kube-node-lease, kyverno, cilium-secrets, local-path-storage, tetragon]
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+  evaluation:
+    background:
+      enabled: true
+  autogen:
+    podControllers:
+      controllers: [deployments, statefulsets, daemonsets, jobs, cronjobs]
+  variables:
+    - name: allContainers
+      expression: >-
+        object.spec.containers + object.spec.?initContainers.orValue([]) +
+        object.spec.?ephemeralContainers.orValue([])
+  validations:
+    - expression: >-
+        variables.allContainers.all(c, has(c.resources) &&
+        has(c.resources.requests) && has(c.resources.requests.memory) &&
+        c.resources.requests.memory != '' && has(c.resources.requests.cpu) &&
+        c.resources.requests.cpu != '' && has(c.resources.limits) &&
+        has(c.resources.limits.memory) && c.resources.limits.memory != '')
+      message: >-
+        CPU and memory resource requests and memory limits are required for
+        containers.

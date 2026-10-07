@@ -1,0 +1,40 @@
+# Kyverno's background controller creates the generated CiliumNetworkPolicy objects.
+# Its default ClusterRole knows nothing about cilium.io, so we aggregate this one into it.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kyverno:background-controller:cilium
+  labels:
+    rbac.kyverno.io/aggregate-to-background-controller: "true"
+rules:
+  - apiGroups: ["cilium.io"]
+    resources: ["ciliumnetworkpolicies"]
+    verbs: ["create", "update", "patch", "delete", "get", "list", "watch"]
+---
+# The admission controller only reads: it has to look the generated resource up when the
+# trigger (Namespace) is updated or deleted.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kyverno:admission-controller:cilium
+  labels:
+    rbac.kyverno.io/aggregate-to-admission-controller: "true"
+rules:
+  - apiGroups: ["cilium.io"]
+    resources: ["ciliumnetworkpolicies"]
+    verbs: ["get", "list", "watch"]
+---
+# The reports controller writes PolicyReports for every resource a policy matches. Without read access
+# to Gateways, restrict-gateway-namespace stays READY=false with "Policy is not ready for reporting,
+# missing permissions: get gateway.networking.k8s.io/v1, Resource=gateways". Admission still works;
+# only the reports are missing.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kyverno:reports-controller:gateway-api
+  labels:
+    rbac.kyverno.io/aggregate-to-reports-controller: "true"
+rules:
+  - apiGroups: ["gateway.networking.k8s.io"]
+    resources: ["gateways"]
+    verbs: ["get", "list", "watch"]

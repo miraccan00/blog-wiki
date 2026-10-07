@@ -1,0 +1,16 @@
+# policy-reporter/values.yaml — chart 3.10.0. A web UI for the PolicyReports Kyverno writes.
+# resources are set because this cluster's own require-requests-limits rule applies to it too.
+resources:
+  requests: {cpu: 10m, memory: 64Mi}
+  limits: {memory: 128Mi}
+ui:
+  enabled: true
+  resources:
+    requests: {cpu: 10m, memory: 64Mi}
+    limits: {memory: 128Mi}
+plugin:
+  kyverno:
+    enabled: true
+    resources:
+      requests: {cpu: 10m, memory: 64Mi}
+      limits: {memory: 128Mi}
